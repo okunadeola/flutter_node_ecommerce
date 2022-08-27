@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "730218358150",
+    "project_id": "flutecom-b4f2e",
+    "storage_bucket": "flutecom-b4f2e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730218358150:android:5f7d3ef4b981b3237af807",
+        "android_client_info": {
+          "package_name": "com.flutterecom.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "730218358150-tsrtg2l0500vadlihacua25blf67qqme.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_8D6-apYwLfjFtLkn6iO2vH_cKTKQrLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "730218358150-tsrtg2l0500vadlihacua25blf67qqme.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
