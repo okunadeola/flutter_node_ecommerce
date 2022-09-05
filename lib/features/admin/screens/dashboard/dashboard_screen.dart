@@ -7,6 +7,7 @@ import 'package:ecom/features/admin/screens/dashboard/controllers/controller.dar
 import 'components/custom_appbar.dart';
 import 'components/dashboard_content.dart';
 import 'components/drawer_menu.dart';
+import 'components/order_screen.dart';
 
 class DashBoardScreen extends StatelessWidget {
   static const String routeName  = '/adminnew';
@@ -47,9 +48,7 @@ class DashBoardScreen extends StatelessWidget {
                           );
                         }
                         if (value.selectedMenu == m.MenuItem.Order) {
-                          return Scaffold(
-                            appBar: AppBar(title: const Text('Order'),),
-                          );
+                          return const AdminOrder();
                         }
                         return Container();
                       },

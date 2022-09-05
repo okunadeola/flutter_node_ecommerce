@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 // AppLoading.showLoadingDialog(context);
 class AppLoading {
-  static AppLoading _instance = new AppLoading.internal();
+  static final AppLoading _instance =  AppLoading.internal();
   static bool _isLoading = false;
 
   AppLoading.internal();
@@ -24,12 +24,12 @@ class AppLoading {
         context: _context!,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return SimpleDialog(
+          return const SimpleDialog(
             elevation: 0.0,
             backgroundColor: Colors.transparent,
             children: <Widget>[
               Center(
-                child: CircularProgressIndicator(
+                child: RefreshProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
                 ),
               )

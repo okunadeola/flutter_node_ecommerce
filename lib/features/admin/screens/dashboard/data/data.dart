@@ -7,18 +7,18 @@ import '../../../models/discussions_info_model.dart';
 import '../../../models/referal_info_model.dart';
 
 
-List analyticData = [
-  AnalyticInfo(
-    title: "Users",
-    count: 720,
-    svgSrc: "assets/icons/Subscribers.svg",
-    color: primaryColor,
-  ),
+List<AnalyticInfo> analyticData = [
   AnalyticInfo(
     title: "Products",
     count: 820,
     svgSrc: "assets/icons/Post.svg",
     color: purple,
+  ),
+  AnalyticInfo(
+    title: "Users",
+    count: 720,
+    svgSrc: "assets/icons/Subscribers.svg",
+    color: primaryColor,
   ),
   AnalyticInfo(
     title: "Orders",

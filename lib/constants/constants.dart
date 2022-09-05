@@ -9,6 +9,9 @@ const bgColor = Color.fromRGBO(247, 251, 254, 1);
 const textColor = Colors.black;
 const lightTextColor = Colors.black26;
 const transparent = Colors.transparent;
+const kSecondaryColor = Color(0xFF979797);
+const kPrimaryColor = Color(0xFFFF7643);
+
 
 const grey = Color.fromRGBO(148, 170, 220, 1);
 const purple = Color.fromRGBO(165, 80, 179, 1);

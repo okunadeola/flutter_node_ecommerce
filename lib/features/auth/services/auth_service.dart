@@ -7,6 +7,7 @@ import 'package:ecom/constants/error_handling.dart';
 import 'package:ecom/constants/global_variables.dart';
 import 'package:ecom/constants/utils.dart';
 import 'package:ecom/features/admin/screens/admin_screen.dart';
+import 'package:ecom/features/admin/screens/dashboard/dashboard_screen.dart';
 import 'package:ecom/models/user.dart';
 import 'package:ecom/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -102,7 +103,7 @@ class AuthService {
                     )
                   : Navigator.pushNamedAndRemoveUntil(
                       context,
-                      AdminScreen.routeName,
+                      DashBoardScreen.routeName,
                       (route) => false,
                     );
             }

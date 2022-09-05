@@ -48,9 +48,10 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         builder: (_) => const BottomBar(),
       );
     case AddProductScreen.routeName:
+         var data = routeSettings.arguments as Product ?;
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_) => const AddProductScreen(),
+        builder: (_) => AddProductScreen(productEdit: data,),
       );
     case CartScreen.routname:
       return MaterialPageRoute(

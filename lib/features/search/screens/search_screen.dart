@@ -35,7 +35,6 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   loadFilter() {
-    print(widget.theProduct);
     setState(() {
       products = widget.theProduct ?? [];
     });
@@ -116,12 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
               ),
-              Container(
-                color: Colors.transparent,
-                height: 42,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                child: const Icon(Icons.mic, color: Colors.black, size: 25),
-              ),
+             
             ],
           ),
         ),

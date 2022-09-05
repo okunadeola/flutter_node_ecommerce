@@ -8,11 +8,13 @@ import 'package:ecom/constants/utils.dart';
 import 'package:ecom/features/admin/services/admin_services.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:ecom/models/product.dart';
 import 'package:flutter/material.dart';
 
 class AddProductScreen extends StatefulWidget {
   static const String routeName = '/add-product';
-  const AddProductScreen({Key? key}) : super(key: key);
+  const AddProductScreen({Key? key, this.productEdit}) : super(key: key);
+  final Product ? productEdit; 
 
   @override
   State<AddProductScreen> createState() => _AddProductScreenState();
@@ -24,10 +26,40 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController quantityController = TextEditingController();
   final AdminServices adminServices = AdminServices();
+  bool feature = false;
+  String editingProductId = '';
 
   String category = 'Mobiles';
   List<File> images = [];
+  List<String> imageString = [];
   final _addProductFormKey = GlobalKey<FormState>();
+
+
+  @override
+  void initState() {
+    super.initState();
+    getValue();
+  }
+
+
+
+  getValue(){
+    if (widget.productEdit != null) {
+      var value = widget.productEdit;
+      setState(() {
+        imageString = value?.images ?? [];
+        productNameController.text = value?.name ?? '';
+        descriptionController.text = value?.description ?? '';
+        priceController.text = value?.price.toString() ?? '';
+        quantityController.text = value?.quantity.toString() ?? '';
+        category = value?.category ?? category;
+        feature = value?.feature ?? feature;
+        editingProductId = value?.id ?? editingProductId;
+      });
+    }
+  }
+
+
 
   @override
   void dispose() {
@@ -53,9 +85,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
         name: productNameController.text,
         description: descriptionController.text,
         price: double.parse(priceController.text),
+        feature:  feature,
         quantity: double.parse(quantityController.text),
         category: category,
         images: images,
+        isEditing: false,
+        imagesUrl: imageString
+      );
+    }
+  }
+  void editProduct() {
+    if (_addProductFormKey.currentState!.validate() && imageString.isNotEmpty) {
+      adminServices.editProduct(
+        context: context,
+        name: productNameController.text,
+        description: descriptionController.text,
+        price: double.parse(priceController.text),
+        feature:  feature,
+        quantity: double.parse(quantityController.text),
+        category: category,
+        images: images,
+        isEditing: true,
+        imagesUrl: imageString,
+        id: editingProductId
       );
     }
   }
@@ -94,6 +146,23 @@ class _AddProductScreenState extends State<AddProductScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
+                widget.productEdit != null ? CarouselSlider(
+                        items: imageString.map(
+                          (i) {
+                            return Builder(
+                              builder: (BuildContext context) => Image.network(
+                                i,
+                                fit: BoxFit.cover,
+                                height: 200,
+                              ),
+                            );
+                          },
+                        ).toList(),
+                        options: CarouselOptions(
+                          viewportFraction: 1,
+                          height: 200,
+                        ),
+                      ) :
                 images.isNotEmpty
                     ? CarouselSlider(
                         items: images.map(
@@ -185,11 +254,24 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     },
                   ),
                 ),
+                 const SizedBox(height: 10),
+                Card(
+                  elevation: 3,
+                  child: SwitchListTile.adaptive(
+                    
+                    title: const Text('Featured Product'),
+                    subtitle: const Text('make as featured product'),
+                    value: feature, onChanged: (value){
+                    setState(() {
+                      feature = value;
+                    });
+                  }),
+                ),
                 const SizedBox(height: 10),
                 CustomButton(
                   color: primaryColor,
-                  text: 'Sell',
-                  onTap: sellProduct,
+                  text: widget.productEdit != null ? 'Edit'  : 'Sell',
+                  onTap:  widget.productEdit != null ? editProduct :  sellProduct,
                 ),
                    const SizedBox(height: 10),
               ],

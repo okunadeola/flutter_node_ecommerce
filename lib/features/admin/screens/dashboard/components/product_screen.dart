@@ -2,15 +2,16 @@
 
 
 
-import 'dart:convert';
-import 'dart:math';
+// ignore_for_file: avoid_print
+
 
 import 'package:ecom/constants/constants.dart';
 import 'package:ecom/constants/responsive.dart';
 import 'package:ecom/features/admin/screens/add_product_screen.dart';
+import 'package:ecom/features/admin/services/admin_services.dart';
+import 'package:ecom/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:number_pagination/number_pagination.dart';
-import 'package:http/http.dart' as http;
 
 
 class Paging extends StatefulWidget {
@@ -21,66 +22,84 @@ class Paging extends StatefulWidget {
 }
 
 class _PagingState extends State<Paging> {
-var _show = false;
-final search = 'ola';
-List _info = [];
-  var selectedPageNumber = 3;
-
-  final DataTableSource _data = MyData();
-    var _sortIndex = 0;
+List<Product> products = [];
+int totalPage = 1;
+int selectedPage = 1;
+  var _sortIndex = 0;
   var _sortAsc = true;
+
+
+
+// var _show = false;
+// final search = 'ola';
+// List _info = [];
+  // var selectedPageNumber = 3;
+
+  // final DataTableSource _data = MyData();
 
     void setSort(int i, bool asc) => setState(() {
         _sortIndex = i;
         _sortAsc = asc;
       });
 
+  @override
+  void initState() {
+      // handlePage(1);
+    super.initState();
 
+    fetchAllProducts(1);
+  }
 
-@override
-void initState() {
-  super.initState();
-  handlePage(1);
-}
-
-
-
-
- fetchUser(currrentPage)async{
-    if(currrentPage <= 100){
-      try {
-          final url = Uri.parse('https://api.github.com/search/users?q=${search}&page=${currrentPage}&per_page=10');
-        final res = await http.get(url);
-        if (res.statusCode == 200) {
-         var data = jsonDecode(res.body)  ;
-          final info = data['items'];
-          return info;
-        }
-      } catch (error) {
-        print(error);
-      }
-    }else{
-      setState(() {
-        _show = true;
-      });
-    
-      return null;
+  fetchAllProducts(int page) async {
+    if (mounted) {
+      var res = await AdminServices().fetchAllProductsWithPagination(context, page);
+      products = res['products'];
+      totalPage = res['totalPage'];
+      setState(() {});
     }
+  }
+
+
+  handlePageChanged(int ? data)async{
+        final currentPage = data ?? 1;
+        await fetchAllProducts(currentPage);
+  }
+
+//  fetchUser(currrentPage)async{
+//     if(currrentPage <= 100){
+//       try {
+//           final url = Uri.parse('https://api.github.com/search/users?q=$search&page=$currrentPage&per_page=10');
+//         final res = await http.get(url);
+//         if (res.statusCode == 200) {
+//          var data = jsonDecode(res.body)  ;
+//           final info = data['items'];
+//           return info;
+//         }
+//       } catch (error) {
+//         print(error);
+//       }
+//     }else{
+//       setState(() {
+//         _show = true;
+//       });
+    
+//       return null;
+//     }
      
-  }
+//   }
 
-  handlePage(int ? data)async{
-    final currentPage = data ?? 1;
-    final latestFromCall = await fetchUser(currentPage);
+  // handlePage(int ? data)async{
+  //   final currentPage = data ?? 1;
+  //   final latestFromCall = await fetchUser(currentPage);
     
-    if( latestFromCall != null){
-      print(latestFromCall);
-      setState(() {
-        _info = latestFromCall;
-      });
-    }
+  //   if( latestFromCall != null){
+  //     print(latestFromCall);
+  //     setState(() {
+  //       _info = latestFromCall;
+  //     });
+  //   }
 
-  }
+  // }
 
 
 
@@ -119,8 +138,8 @@ void initState() {
                             defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
                       ),
                     ),
-                    icon: Icon(Icons.add),
-                    label: Text("Add New", style: TextStyle(fontWeight: FontWeight.bold),),
+                    icon: const Icon(Icons.add),
+                    label: const Text("Add New", style: TextStyle(fontWeight: FontWeight.bold),),
                   ),
                 ),
               ],
@@ -132,7 +151,7 @@ void initState() {
           padding: const  EdgeInsets.all(defaultPadding),
           decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,9 +169,8 @@ void initState() {
                      sortAscending: _sortAsc,
                       sortColumnIndex: _sortIndex,     
                     columns:  [
-                      DataColumn(label: Text('ID'),
+                      DataColumn(label: Text('Image'),
                          numeric: true,
-                          onSort: setSort,
                       ),
                       DataColumn(label: Text('Name'),
                          onSort: setSort,
@@ -160,10 +178,13 @@ void initState() {
                       DataColumn(label: Text('Price'),
                          onSort: setSort,
                           numeric: true,
+                        ),
+                      DataColumn(label: Text('Actions'),
+                          numeric: true,
                         )
                       ],
                   
-                    rows: getRow(),
+                    rows: getProductRow(),
                     columnSpacing: 100,
                     horizontalMargin: 20,     
                     showCheckboxColumn: false,
@@ -171,21 +192,74 @@ void initState() {
                   ),
                 ),      
               ),
-                NumberPagination(
-              onPageChanged: (int pageNumber) {
-                //do somthing for selected page
+               products.isNotEmpty ? NumberPagination(
+              onPageChanged: (int pageNumber) {       
                 setState(() {
-                  selectedPageNumber = pageNumber;
+                  selectedPage= pageNumber;
                 });
-                handlePage(pageNumber);
+                handlePageChanged(pageNumber);
               },
-              pageTotal: 100,
-              threshold: 5,
+              pageTotal: totalPage,
+              threshold: 2,
               fontSize: 10,
-              pageInit: selectedPageNumber, // picked number when init page
+              pageInit: selectedPage,
               colorPrimary: Colors.greenAccent,
               colorSub: Colors.grey[800]!,
-            ),
+            ) : const SizedBox.shrink(),
+
+
+
+            // const SizedBox(height: 10,),
+            // // demo
+            //   SizedBox(
+            //     width: double.infinity,
+            //     child:SingleChildScrollView(
+            //           scrollDirection: Axis.vertical,
+            //       child: SingleChildScrollView(
+            //           scrollDirection: Axis.horizontal,
+            //         child: DataTable(  
+            //           dividerThickness: 2,
+            //           showBottomBorder: true,
+            //           dataRowHeight: 75,
+            //          sortAscending: _sortAsc,
+            //           sortColumnIndex: _sortIndex,     
+            //         columns:  [
+            //           DataColumn(label: Text('ID'),
+            //              numeric: true,
+            //               onSort: setSort,
+            //           ),
+            //           DataColumn(label: Text('Name'),
+            //              onSort: setSort,
+            //             ),
+            //           DataColumn(label: Text('Price'),
+            //              onSort: setSort,
+            //               numeric: true,
+            //             )
+            //           ],
+                  
+            //         rows: getRow(),
+            //         columnSpacing: 100,
+            //         horizontalMargin: 20,     
+            //         showCheckboxColumn: false,
+            //                 ),
+            //       ),
+            //     ),      
+            //   ),
+            //     NumberPagination(
+            //   onPageChanged: (int pageNumber) {
+            //     //do somthing for selected page
+            //     setState(() {
+            //       selectedPageNumber = pageNumber;
+            //     });
+            //     // handlePage(pageNumber);
+            //   },
+            //   pageTotal: 100,
+            //   threshold: 2,
+            //   fontSize: 10,
+            //   pageInit: selectedPageNumber, // picked number when init page
+            //   colorPrimary: Colors.greenAccent,
+            //   colorSub: Colors.grey[800]!,
+            // ),
             ],
           ),
         ),
@@ -217,15 +291,35 @@ void initState() {
     );
   }
 
- List<DataRow> getRow() {
-    return _info.map((data) => 
+ List<DataRow> getProductRow() {
+    return products.map((data) => 
      DataRow(cells: [
-      DataCell(Text(data['id'].toString(), textAlign: TextAlign.start,)),
-      DataCell(Text(data["login"], textAlign: TextAlign.start)),
-      DataCell(Text(data["node_id"].toString(), textAlign: TextAlign.start))
+      DataCell(CircleAvatar(
+        backgroundColor: Colors.grey,
+        radius: 30,
+        backgroundImage:NetworkImage(data.images.first,) ),),
+      DataCell(Text(data.name, textAlign: TextAlign.start)),
+      DataCell(Text(data.price.toString(), textAlign: TextAlign.start)),
+      DataCell(Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+        IconButton(onPressed: () async{
+          Navigator.pushNamed(context, AddProductScreen.routeName, arguments: data).then((value) =>     fetchAllProducts(1));
+        }, icon: const Icon(Icons.edit_calendar))
+      ],)),
     ])).toList();
     
   }
+
+//  List<DataRow> getRow() {
+//     return _info.map((data) => 
+//      DataRow(cells: [
+//       DataCell(Text(data['id'].toString(), textAlign: TextAlign.start,)),
+//       DataCell(Text(data["login"], textAlign: TextAlign.start)),
+//       DataCell(Text(data["node_id"].toString(), textAlign: TextAlign.start))
+//     ])).toList();
+    
+//   }
 }
 
 
@@ -268,28 +362,28 @@ void initState() {
 
 
 
-class MyData extends DataTableSource {
-  // Generate some made-up data
-  final List<Map<String, dynamic>> _data = List.generate(
-      200,
-      (index) => {
-            "id": index,
-            "title": "Item $index",
-            "price": Random().nextInt(10000)
-          });
+// class MyData extends DataTableSource {
+//   // Generate some made-up data
+//   final List<Map<String, dynamic>> _data = List.generate(
+//       200,
+//       (index) => {
+//             "id": index,
+//             "title": "Item $index",
+//             "price": Random().nextInt(10000)
+//           });
 
-  @override
-  bool get isRowCountApproximate => true;
-  @override
-  int get rowCount => _data.length;
-  @override
-  int get selectedRowCount => 0;
-  @override
-  DataRow getRow(int index) {
-    return DataRow(cells: [
-      DataCell(Text(_data[index]['id'].toString())),
-      DataCell(Text(_data[index]["title"])),
-      DataCell(Text(_data[index]["price"].toString())),
-    ]);
-  }
-}
+//   @override
+//   bool get isRowCountApproximate => true;
+//   @override
+//   int get rowCount => _data.length;
+//   @override
+//   int get selectedRowCount => 0;
+//   @override
+//   DataRow getRow(int index) {
+//     return DataRow(cells: [
+//       DataCell(Text(_data[index]['id'].toString())),
+//       DataCell(Text(_data[index]["title"])),
+//       DataCell(Text(_data[index]["price"].toString())),
+//     ]);
+//   }
+// }

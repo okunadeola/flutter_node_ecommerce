@@ -9,6 +9,7 @@ import 'package:ecom/features/product_details/services/product_details_services.
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 
@@ -148,14 +149,14 @@ class _AddressScreenState extends State<AddressScreen> {
     } else if (addressFromProvider.isNotEmpty) {
       addressToBeUsed = addressFromProvider;
     } else {
-      showSnackBar(context, 'ERROR');
+      showSnackBar(context, 'ERROR  No address');
     }
   }
 
   Future<void> initPaymentSheet(context,
       {required String email, required String amount}) async {
     try {
-      print(amount);
+      // print(amount);
       String formattedAmount = amount + "00";
       final response = await http.post(
           Uri.parse('https://paymentwithstripenode.herokuapp.com/api/payment'),
@@ -302,18 +303,21 @@ class _AddressScreenState extends State<AddressScreen> {
                       ],
                     )
                   : Column(
-                      children: const [
-                        SizedBox(
+                      children:  [
+                        const SizedBox(
                           height: 20,
                         ),
                         SizedBox(
                             height: 20,
-                            child: Center(
-                                child: Text(
-                              "Please add your address to complete your order",
-                              style: TextStyle(color: Colors.grey),
-                            ))),
-                        SizedBox(
+                            child: Wrap(
+                              children: const [Text(
+                                "Please add your address to complete your order",
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.visible,
+                                style: TextStyle(color: Colors.grey),
+                              ),]
+                            )),
+                        const SizedBox(
                           height: 20,
                         ),
                       ],
@@ -415,12 +419,16 @@ class _AddressScreenState extends State<AddressScreen> {
   }
 
   showModal(BuildContext context) async {
-    return await showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return SingleChildScrollView(
-            child: Column(          
+
+    showMaterialModalBottomSheet(
+      expand: true,
+  context: context,
+  builder: (context) {
+      return SingleChildScrollView(
+        controller: ModalScrollController.of(context),
+        child:  Column(          
               children: [
+                const SizedBox(height: 20,),
                 Container(
                   margin: const EdgeInsets.only(top: 8),
                   padding: const EdgeInsets.all(8.0),
@@ -459,9 +467,66 @@ class _AddressScreenState extends State<AddressScreen> {
                 ),
               ],
             ),
-          );
-        });
-  }
+      );
+  },
+);
+
+
+
+
+
+
+
+
+
+
+    // return await showModalBottomSheet(
+    //     context: context,
+    //     builder: (context) {
+    //       return SingleChildScrollView(
+    //         child: Column(          
+    //           children: [
+    //             Container(
+    //               margin: const EdgeInsets.only(top: 8),
+    //               padding: const EdgeInsets.all(8.0),
+    //               child: Form(
+    //                 key: _addressFormKey,
+    //                 child: Column(
+    //                   children: [
+    //                     CustomTextField(
+    //                       controller: flatBuildingController,
+    //                       hintText: 'Flat, House no, Building',
+    //                     ),
+    //                     const SizedBox(height: 10),
+    //                     CustomTextField(
+    //                       controller: areaController,
+    //                       hintText: 'Area, Street',
+    //                     ),
+    //                     const SizedBox(height: 10),
+    //                     CustomTextField(
+    //                       controller: pincodeController,
+    //                       hintText: 'Pincode',
+    //                     ),
+    //                     const SizedBox(height: 10),
+    //                     CustomTextField(
+    //                       controller: cityController,
+    //                       hintText: 'Town/City',
+    //                     ),
+    //                     const SizedBox(height: 10),
+    //                     CustomButtons(
+    //                       color: GlobalVariables.selectedNavBarColor,
+    //                       onTap: submitAddress,
+    //                       text: 'Set Address',
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       );
+    //     });
+}
 
   void submitAddress() {
     bool isForm = flatBuildingController.text.isNotEmpty ||
@@ -471,10 +536,12 @@ class _AddressScreenState extends State<AddressScreen> {
 
     if (isForm || _addressFormKey.currentState!.validate()) {
       if (_addressFormKey.currentState!.validate()) {
-        setState(() {
           addressToBeUsed =
               '${flatBuildingController.text}, ${areaController.text}, ${cityController.text} - ${pincodeController.text}';
-        });
+        addressServices.saveUserAddress(
+            context: context, address: addressToBeUsed);
+        setState(() {});
+        Navigator.pop(context);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -482,4 +549,5 @@ class _AddressScreenState extends State<AddressScreen> {
       ));
     }
   }
-}
+  }
+

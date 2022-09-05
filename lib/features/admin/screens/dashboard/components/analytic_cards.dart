@@ -1,3 +1,7 @@
+// ignore_for_file: avoid_print
+
+import 'package:ecom/features/admin/models/analytic_info_model.dart';
+import 'package:ecom/features/admin/services/admin_services.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../constants/constants.dart';
@@ -5,8 +9,47 @@ import '../../../../../constants/responsive.dart';
 import '../data/data.dart';
 import 'analytic_info_card.dart';
 
-class AnalyticCards extends StatelessWidget {
+class AnalyticCards extends StatefulWidget {
   const AnalyticCards({Key? key}) : super(key: key);
+
+  @override
+  State<AnalyticCards> createState() => _AnalyticCardsState();
+}
+
+class _AnalyticCardsState extends State<AnalyticCards> {
+  List<AnalyticInfo> analytics = [];
+  
+ final AdminServices _adminServices = AdminServices();
+
+
+@override
+void initState() {
+  super.initState();
+  fetchAnalytics();
+  
+  
+}
+
+
+fetchAnalytics() async{
+       var incomingValue = await  _adminServices.fetchQuickAnalytics(context);
+         List<AnalyticInfo>  copiedValue = [...analyticData];
+
+      // // //  incomingValue.
+      for (var i = 0; i < copiedValue.length; i++) {
+        copiedValue[i].count = incomingValue[i];
+      }
+
+      setState(() {
+        analytics = copiedValue;
+      });
+
+}
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {

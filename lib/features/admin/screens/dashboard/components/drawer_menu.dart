@@ -16,7 +16,7 @@ class DrawerMenu extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(appPadding),
-            child: Image.asset("assets/images/logowithtext.png"),
+            child: Image.asset("assets/images/ecom_logo.png", height: 100,),
           ),
           DrawerListTile(
               title: 'DashBoard',

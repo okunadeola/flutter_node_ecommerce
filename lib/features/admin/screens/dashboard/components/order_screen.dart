@@ -1,24 +1,20 @@
 import 'package:ecom/common/widgets/loader.dart';
-import 'package:ecom/constants/global_variables.dart';
-import 'package:ecom/features/account/services/account_services.dart';
-import 'package:ecom/features/account/widgets/single_product.dart';
+import 'package:ecom/features/admin/services/admin_services.dart';
 import 'package:ecom/features/order_details/screens/order_details.dart';
 import 'package:ecom/models/order.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class Orders extends StatefulWidget {
-  const Orders({Key? key}) : super(key: key);
+class AdminOrder extends StatefulWidget {
+  const AdminOrder({Key? key}) : super(key: key);
 
   @override
-  State<Orders> createState() => _OrdersState();
+  State<AdminOrder> createState() => _AdminOrderState();
 }
 
-class _OrdersState extends State<Orders> {
-  List<Order> orders = [];
-  bool isLoading = false;
-
-  final AccountServices accountServices = AccountServices();
+class _AdminOrderState extends State<AdminOrder> {
+  List<Order> orders =  [];
+  final AdminServices adminServices = AdminServices();
 
   @override
   void initState() {
@@ -27,79 +23,62 @@ class _OrdersState extends State<Orders> {
   }
 
   void fetchOrders() async {
-      setState(() {
-        isLoading = true;
-      });
-    orders = await accountServices.fetchMyOrders(context: context);
-      setState(() {
-        isLoading = false;
-      });
-
+    orders = await adminServices.fetchAllOrders(context);
+    if (mounted) {
+       setState(() {});  
+      
+    }
   }
 
-  // Widget showLoadingOrEmpty(){
-  //   const Loader();
-  //   Future.delayed(const Duration(seconds: 15));
-  //  return  const Text('Your order is empty, shop now');
 
-  // }
 
- 
   @override
   Widget build(BuildContext context) {
-    return isLoading 
-        ?  const Loader()
-        : orders.isNotEmpty ? Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(
-                      left: 15,
-                    ),
-                    child: const Text(
-                      'Your Orders',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+    return orders.isEmpty
+        ? const Loader()
+        : SingleChildScrollView(
+          child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(
+                        left: 15,
+                      ),
+                      child: const Text(
+                        'Oder List',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(
-                      right: 15,
-                    ),
-                    child: Text(
-                      'See all',
-                      style: TextStyle(
-                        color: GlobalVariables.selectedNavBarColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              // display orders
-              ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        OrderDetailScreen.routeName,
-                        arguments: orders[index],
-                      );
-                    },
-                    child: OrderProduct(order: orders[index])
-                    
-                  );
-                },
-              ),
-            ],
-          ) : const Text('Your order is empty, shop now');
+                  ],
+                ),
+                // display orders
+                ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: orders.length,
+                  itemBuilder: (context, index) {
+                    final orderData = orders[index];
+                    return GestureDetector(
+                      onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      OrderDetailScreen.routeName,
+                      arguments: orderData,
+                    ).then((value) => fetchOrders());
+                  },
+                      child: OrderProduct(order: orderData)
+                      
+                    );
+                  },
+                ),
+              ],
+            ),
+        );
   }
 }
 
