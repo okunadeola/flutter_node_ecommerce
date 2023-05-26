@@ -3,7 +3,7 @@ import 'package:ecom/features/account/screens/account_screen.dart';
 import 'package:ecom/features/cart/screens/cart_screen.dart';
 import 'package:ecom/features/home/screens/home_screen.dart';
 import 'package:ecom/providers/user_provider.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as b;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -100,7 +100,7 @@ class _BottomBarState extends State<BottomBar> {
                   ),
                 ),
               ),
-              child: Badge(
+              child: b.Badge(
                 elevation: 3,
                 badgeContent:
                     Text(userCartLen > 0 ? userCartLen.toString() : ''),
