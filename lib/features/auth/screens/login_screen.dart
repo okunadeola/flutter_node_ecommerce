@@ -2,6 +2,7 @@ import 'package:ecom/features/auth/screens/auth_screen.dart';
 import 'package:ecom/features/auth/screens/register_screen.dart';
 import 'package:ecom/features/auth/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login-screen';
@@ -19,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
     bool  isShowPassword = true;  
+    bool _isLoading = false;
   @override
   void dispose() {
     super.dispose();
@@ -26,12 +28,18 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
   }
 
-  void signInUser() {
-    authService.signInUser(
+  void signInUser() async{
+        // updateState(true);
+        EasyLoading.show(status: 'loading...', maskType: EasyLoadingMaskType.black );
+        print(_emailController.text);
+        print(_passwordController.text);
+    await authService.signInUser(
       context: context,
       email: _emailController.text,
       password: _passwordController.text,
     );
+    // updateState(false);
+    EasyLoading.dismiss();
   }
 
   @override
@@ -61,8 +69,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding:
                             const EdgeInsets.only(top: 50.0, bottom: 100.0),
                         child: Column(
-                          children: const [
-                            Text(
+                          children: const  [
+                             Text(
                               "ECOM",
                               style: TextStyle(
                                   fontSize: 50.0,
@@ -240,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 )
                               ],
                             ),
-                            onPressed: () {
+                            onPressed: _isLoading ? null : () {
                               if (_signInFormKey.currentState!.validate()) {
                                 signInUser();
                               }

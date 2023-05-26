@@ -35,32 +35,34 @@ class _OrdersScreenState extends State<OrdersScreen> {
     if (orders == null) {
       return const Loader();
     } else {
-      return Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GridView.builder(
-            itemCount: orders!.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                mainAxisSpacing: 10, crossAxisCount: 2),
-            itemBuilder: (context, index) {
-              final orderData = orders![index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    OrderDetailScreen.routeName,
-                    arguments: orderData,
-                  ).then((value) => fetchOrders());
-                },
-                child: SizedBox(
-                  height: 150,
-                  child: SingleProduct(
-                    key: ValueKey(orderData.products[0].id),
-                    image: orderData.products[0].images[0],
+      return SafeArea(
+        child: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GridView.builder(
+              itemCount: orders!.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  mainAxisSpacing: 10, crossAxisCount: 2),
+              itemBuilder: (context, index) {
+                final orderData = orders![index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      OrderDetailScreen.routeName,
+                      arguments: orderData,
+                    ).then((value) => fetchOrders());
+                  },
+                  child: SizedBox(
+                    height: 150,
+                    child: SingleProduct(
+                      key: ValueKey(orderData.products[0].id),
+                      image: orderData.products[0].images[0],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       );

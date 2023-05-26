@@ -99,7 +99,7 @@ class _OrdersState extends State<Orders> {
                 },
               ),
             ],
-          ) : const Text('Your order is empty, shop now');
+          ) : const Text('Your order is empty, start shopping');
   }
 }
 

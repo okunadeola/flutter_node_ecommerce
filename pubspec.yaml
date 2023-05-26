@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.1+4
 
 environment:
   sdk: ">=2.16.1 <3.0.0"
@@ -59,18 +59,42 @@ dependencies:
   number_pagination: ^0.0.3+2
   cached_network_image: ^3.2.1
   modal_bottom_sheet: ^2.1.0
+  flutter_easyloading: ^3.0.5
 
 dev_dependencies:
   flutter_lints: ^1.0.0
   flutter_test:
     sdk: flutter
 
-flutter_native_splash:
-  # color: "#dddddd"
-  # color_dark: "333333"
-  background_image: assets/images/ecom_logo.png
-  android: true
+flutter_icons:
+  android: "launcher_icon"
   ios: true
+  image_path: "assets/images/play_store.png"
+
+
+flutter_native_splash:
+  color: "#f7f6f1"
+  color_dark: "#272727"
+  image: assets/images/play_store.png
+  image_dark: assets/images/play_store.png
+
+
+  android_12:
+    image: assets/images/play_store.png
+    icon_background_color: "#f7f6f1"
+    image_dark: assets/images/play_store.png
+    icon_background_color_dark: "#272727"
+
+# flutter_native_splash:
+#   background_image: assets/images/ecom_logo.png
+#   android: true
+#   ios: true
+
+# android_12:
+#   background_image: assets/images/ecom_logo.png
+#   android: true
+#   ios: true
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -84,6 +108,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/images/pay.png
     - assets/icons/
     - assets/applepay.json
     - assets/gpay.json

@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:ecom/common/widgets/bottom_bar.dart';
 import 'package:ecom/constants/error_handling.dart';
@@ -19,7 +20,7 @@ import 'package:flutter/scheduler.dart';
 
 class AuthService {
   // sign up user
-  void signUpUser({
+  Future<void> signUpUser({
     required BuildContext context,
     required String email,
     required String password,
@@ -53,6 +54,7 @@ class AuthService {
           showSnackBar(
             context,
             'Account created! Login with the same credentials!',
+            Colors.green
           );
         },
       );
@@ -64,7 +66,7 @@ class AuthService {
   }
 
   // sign in user
-  void signInUser({
+  Future<void> signInUser({
     required BuildContext context,
     required String email,
     required String password,
@@ -81,6 +83,7 @@ class AuthService {
           "Access-Control-Allow-Origin": "*"
         },
       );
+      print('$uri/api/signin');
 
       httpErrorHandle(
           response: res,
@@ -110,7 +113,8 @@ class AuthService {
           });
     } catch (e) {
         SchedulerBinding.instance.addPostFrameCallback((_) {
-            showSnackBar(context, e.toString());
+            print("here2");
+            showSnackBar(context, 'something went wrong');
         });
     }
   }

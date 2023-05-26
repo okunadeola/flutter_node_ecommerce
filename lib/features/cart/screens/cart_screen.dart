@@ -63,119 +63,121 @@ class _CartScreenState extends State<CartScreen> {
         .map((e) => sum += e['quantity'] * e['product']['price'] as int)
         .toList();
 
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: AppBar(
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: GlobalVariables.appBarGradient,
+    return SafeArea(
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: AppBar(
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: GlobalVariables.appBarGradient,
+              ),
             ),
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Container(
-                  height: 42,
-                  margin: const EdgeInsets.only(left: 15),
-                  child: Material(
-                    borderRadius: BorderRadius.circular(7),
-                    elevation: 1,
-                    child: TextFormField(
-                      onFieldSubmitted: navigateToSearchScreen,
-                      decoration: InputDecoration(
-                        prefixIcon: InkWell(
-                          onTap: () {},
-                          child: const Padding(
-                            padding: EdgeInsets.only(
-                              left: 6,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 42,
+                    margin: const EdgeInsets.only(left: 15),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(7),
+                      elevation: 1,
+                      child: TextFormField(
+                        onFieldSubmitted: navigateToSearchScreen,
+                        decoration: InputDecoration(
+                          prefixIcon: InkWell(
+                            onTap: () {},
+                            child: const Padding(
+                              padding: EdgeInsets.only(
+                                left: 6,
+                              ),
+                              child: Icon(
+                                Icons.search,
+                                color: Colors.black,
+                                size: 23,
+                              ),
                             ),
-                            child: Icon(
-                              Icons.search,
-                              color: Colors.black,
-                              size: 23,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.only(top: 10),
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(7),
+                            ),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(7),
+                            ),
+                            borderSide: BorderSide(
+                              color: Colors.black38,
+                              width: 1,
                             ),
                           ),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.only(top: 10),
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(7),
+                          hintText: 'Search ecom..',
+                          hintStyle: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 17,
                           ),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(7),
-                          ),
-                          borderSide: BorderSide(
-                            color: Colors.black38,
-                            width: 1,
-                          ),
-                        ),
-                        hintText: 'Search ecom..',
-                        hintStyle: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 17,
                         ),
                       ),
                     ),
                   ),
                 ),
+                Container(
+                  color: Colors.transparent,
+                  height: 42,
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: const Icon(Icons.mic, color: Colors.black, size: 25),
+                ),
+              ],
+            ),
+          ),
+        ),
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: user.cart.isEmpty ? Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Center(child: Text('You have no item in your cart, shop for goods!')),
+          ) :Column(
+            children: [
+              const AddressBox(),
+              const CartSubtotal(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CustomButtons(
+                  text: 'Checkout',
+                  onTap: () => navigateToAddress(sum),
+                  color: GlobalVariables.selectedNavBarColor,
+                ),
               ),
+              const SizedBox(height: 15),
               Container(
-                color: Colors.transparent,
-                height: 42,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                child: const Icon(Icons.mic, color: Colors.black, size: 25),
+                color: Colors.black12.withOpacity(0.08),
+                height: 1,
+              ),
+              const SizedBox(height: 5),
+              ListView.builder(
+                scrollDirection:Axis.vertical,
+                physics: const BouncingScrollPhysics(),
+                itemCount: user.cart.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return Slidable(
+                    key: ValueKey(user.cart[index]['product']['_id']),
+                    endActionPane: pane(user.cart[index]['product']),
+                    child: CartProduct(
+                      index: index,
+                    ),
+                  );
+                },
               ),
             ],
           ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: user.cart.isEmpty ? Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Center(child: Text('You have no item in your cart, shop for goods!')),
-        ) :Column(
-          children: [
-            const AddressBox(),
-            const CartSubtotal(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CustomButtons(
-                text: 'Checkout',
-                onTap: () => navigateToAddress(sum),
-                color: GlobalVariables.selectedNavBarColor,
-              ),
-            ),
-            const SizedBox(height: 15),
-            Container(
-              color: Colors.black12.withOpacity(0.08),
-              height: 1,
-            ),
-            const SizedBox(height: 5),
-            ListView.builder(
-              scrollDirection:Axis.vertical,
-              physics: const BouncingScrollPhysics(),
-              itemCount: user.cart.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return Slidable(
-                  key: ValueKey(user.cart[index]['product']['_id']),
-                  endActionPane: pane(user.cart[index]['product']),
-                  child: CartProduct(
-                    index: index,
-                  ),
-                );
-              },
-            ),
-          ],
         ),
       ),
     );

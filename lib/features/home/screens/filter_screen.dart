@@ -63,139 +63,141 @@ class _FilterProductScreenState extends State<FilterProductScreen> {
         '\$${(value.start.toInt() * 10).toString()}',
         '\$${(value.end.toInt() * 10).toString()}');
 
-    return Scaffold(
-      backgroundColor: GlobalVariables.selectedNavBarColor,
-      appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: GlobalVariables.selectedNavBarColor,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              appBarWidget(
-                onPressed: () => Navigator.pop(context),
-                icon: Icons.arrow_back_ios_sharp,
-              ),
-              const SizedBox(child: Text('Filter')),
-              appBarWidget(
-                onPressed: clear,
-                icon: Icons.replay_sharp,
-              ),
-            ],
-          )),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 25,
-          ),
-          Expanded(
-              child: Container(
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20))),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const SizedBox(
-                height: 30,
-              ),
-              TopCategories(
-                  isFilter: true, selectCat: selectCategory, reset: reset),
-              const SizedBox(
-                height: 30,
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: SizedBox(
-                  child: Text("Pricing Range",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: GlobalVariables.selectedNavBarColor,
+        appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: GlobalVariables.selectedNavBarColor,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                appBarWidget(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icons.arrow_back_ios_sharp,
                 ),
-              ),
-              RangeSlider(
-                activeColor: GlobalVariables.selectedNavBarColor,
-                values: value,
-                labels: label,
-                divisions: 20,
-                min: 0,
-                max: 1000,
-                onChanged: (val) {
-                  setState(() {
-                    value = val;
-                    min = value.start.toInt() * 10;
-                    max = value.end.toInt() * 10;
-                  
-                  });
-                },
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: SizedBox(
-                  child: Text("Rating",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(child: Text('Filter')),
+                appBarWidget(
+                  onPressed: clear,
+                  icon: Icons.replay_sharp,
                 ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: List.generate(5, (index) {
-                        return InkWell(
-                          onTap: () {
-                            setState(() {
-                              selectedRate = index + 1;
-                            });
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 12.0),
-                            child: Chip(
-                              backgroundColor: selectedRate == index + 1
-                                  ? GlobalVariables.selectedNavBarColor
-                                  : null,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7)),
-                              label: Row(children: [
-                                const Icon(
-                                  Icons.star,
-                                  color: Colors.yellowAccent,
-                                  size: 15,
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  '${index + 1}',
-                                  style: TextStyle(
-                                      color: selectedRate == index + 1
-                                          ? Colors.white
-                                          : Colors.black),
-                                )
-                              ]),
+              ],
+            )),
+        body: Column(
+          children: [
+            const SizedBox(
+              height: 25,
+            ),
+            Expanded(
+                child: Container(
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20))),
+              child:
+                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const SizedBox(
+                  height: 30,
+                ),
+                TopCategories(
+                    isFilter: true, selectCat: selectCategory, reset: reset),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    child: Text("Pricing Range",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                RangeSlider(
+                  activeColor: GlobalVariables.selectedNavBarColor,
+                  values: value,
+                  labels: label,
+                  divisions: 20,
+                  min: 0,
+                  max: 1000,
+                  onChanged: (val) {
+                    setState(() {
+                      value = val;
+                      min = value.start.toInt() * 10;
+                      max = value.end.toInt() * 10;
+                    
+                    });
+                  },
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    child: Text("Rating",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: List.generate(5, (index) {
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedRate = index + 1;
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: Chip(
+                                backgroundColor: selectedRate == index + 1
+                                    ? GlobalVariables.selectedNavBarColor
+                                    : null,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(7)),
+                                label: Row(children: [
+                                  const Icon(
+                                    Icons.star,
+                                    color: Colors.yellowAccent,
+                                    size: 15,
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    '${index + 1}',
+                                    style: TextStyle(
+                                        color: selectedRate == index + 1
+                                            ? Colors.white
+                                            : Colors.black),
+                                  )
+                                ]),
+                              ),
                             ),
-                          ),
-                        );
-                      })),
+                          );
+                        })),
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CustomButtons(
-                  text: 'Apply',
-                  onTap: applyFilter,
-                  color: GlobalVariables.selectedNavBarColor,
+                const SizedBox(
+                  height: 20,
                 ),
-              ),
-            ]),
-          )),
-        ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomButtons(
+                    text: 'Apply',
+                    onTap: applyFilter,
+                    color: GlobalVariables.selectedNavBarColor,
+                  ),
+                ),
+              ]),
+            )),
+          ],
+        ),
       ),
     );
   }

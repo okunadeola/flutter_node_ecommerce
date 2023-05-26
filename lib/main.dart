@@ -17,6 +17,8 @@ import 'package:ecom/router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_stripe/flutter_stripe.dart'; 
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -30,7 +32,11 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsBinding widgetsBinding =  
+  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  
+  FlutterNativeSplash.remove();
 
   
   await Firebase.initializeApp();
@@ -52,6 +58,7 @@ void main() async {
     ),
   ], child: const MyApp()));
 }
+
 
 
 
@@ -90,7 +97,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   reload() {
+    if (mounted) {
     AuthService().getUserData(context);
+    }
   }
 
   getNotification() {
@@ -143,11 +152,14 @@ class _MyAppState extends State<MyApp> {
               background: GlobalVariables.selectedNavBarColor),
           child: MaterialApp(
             navigatorKey: _navKey,
+            builder: EasyLoading.init(),
             // scaffoldMessengerKey: _messangerKey,
             debugShowCheckedModeBanner: false,
             title: 'Amazon Clone',
+
+            
             theme: ThemeData(
-              // scaffoldBackgroundColor: GlobalVariables.backgroundColor,
+              // scaffoldBackgroundColor: GlobalVariables.backgroundColor, keytool -importkeystore -srckeystore C:\Users\OLA\upload-keystore.jks -destkeystore C:\Users\OLA\upload-keystore.jks -deststoretype pkcs12"
               colorScheme: const ColorScheme.light(
                 primary: GlobalVariables.secondaryColor,
               ),

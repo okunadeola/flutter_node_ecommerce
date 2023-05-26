@@ -1,6 +1,7 @@
 import 'package:ecom/features/auth/screens/login_screen.dart';
 import 'package:ecom/features/auth/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String routeName = '/register-screen';
@@ -25,13 +26,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _nameController.dispose();
   }
 
-  void signUpUser() {
-    authService.signUpUser(
+  void signUpUser() async  {
+    EasyLoading.show(status: 'loading...', maskType: EasyLoadingMaskType.black );
+    await authService.signUpUser(
       context: context,
       email: _emailController.text,
       password: _passwordController.text,
       name: _nameController.text,
     );
+    EasyLoading.dismiss();
+    _emailController.clear();
+    _passwordController.clear();
+    _nameController.clear();
+      Navigator.pushNamedAndRemoveUntil(
+        context, LoginScreen.routeName, (route) => false,);
   }
 
   @override

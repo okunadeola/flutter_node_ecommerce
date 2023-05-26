@@ -51,53 +51,55 @@ class _PostsScreenState extends State<PostsScreen> {
   Widget build(BuildContext context) {
     return products == null
         ? const Loader()
-        : Scaffold(
-            body: Padding(
-              padding: const EdgeInsets.all(8.0).copyWith(bottom: 0),
-              child: GridView.builder(
-                itemCount: products!.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisSpacing: 2, crossAxisCount: 2),
-                itemBuilder: (context, index) {
-                  final productData = products![index];
-                  return Column(
-                    children: [
-                      SizedBox(
-                        height: 100,
-                        child: SingleProduct(
-                          image: productData.images[0],
+        : SafeArea(
+          child: Scaffold(
+              body: Padding(
+                padding: const EdgeInsets.all(8.0).copyWith(bottom: 0),
+                child: GridView.builder(
+                  itemCount: products!.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      mainAxisSpacing: 2, crossAxisCount: 2),
+                  itemBuilder: (context, index) {
+                    final productData = products![index];
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: 100,
+                          child: SingleProduct(
+                            image: productData.images[0],
+                          ),
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              productData.name,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                productData.name,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () => deleteProduct(productData, index),
-                            icon: const Icon(
-                              Icons.delete_outline,
+                            IconButton(
+                              onPressed: () => deleteProduct(productData, index),
+                              icon: const Icon(
+                                Icons.delete_outline,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
+                          ],
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
+              floatingActionButton: FloatingActionButton(
+                child: const Icon(Icons.add),
+                onPressed: navigateToAddProduct,
+                tooltip: 'Add a Product',
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerFloat,
             ),
-            floatingActionButton: FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: navigateToAddProduct,
-              tooltip: 'Add a Product',
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-          );
+        );
   }
 }

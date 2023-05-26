@@ -46,6 +46,45 @@ class AccountServices {
     return orderList;
   }
 
+
+
+
+
+
+
+  Future<void> deleteAccount({
+    required BuildContext context,
+  
+  }) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+   
+    try {
+      http.Response res =
+          await http.delete(Uri.parse('$uri/api/delete/account/${userProvider.user.id}'), headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'x-auth-token': userProvider.user.token,
+      });
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+                 logOut(context);
+          });
+
+  
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+    
+  
+  }
+
+
+
+
+
+
   void logOut(BuildContext context) async {
     try {
       SharedPreferences sharedPreferences =

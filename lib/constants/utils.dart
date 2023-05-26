@@ -4,9 +4,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 
-void showSnackBar(BuildContext context, String text) {
+void showSnackBar(BuildContext context, String text, [Color color = Colors.black]) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        duration: const Duration(seconds: 5),
+        backgroundColor: color,
         content: Text(text),
       ),
     );

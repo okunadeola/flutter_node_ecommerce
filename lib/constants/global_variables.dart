@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 
 // String uri = 'http://localhost:4000';
 // String uri = 'http://192.168.43.80:4000';
-String uri = 'https://flutterdartecom.herokuapp.com';
+// String oldUri = 'https://flutterdartecom.herokuapp.com';
+// String uri = 'https://flutter-node-ecom.vercel.app';
+String uri = 'https://shop-ready-server.onrender.com';
 // /api/user/question
+
 
 class GlobalVariables {
   // COLORS

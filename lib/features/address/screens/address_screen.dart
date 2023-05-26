@@ -7,6 +7,7 @@ import 'package:ecom/common/widgets/bottom_bar.dart';
 import 'package:ecom/features/home/screens/home_screen.dart';
 import 'package:ecom/features/product_details/services/product_details_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -158,12 +159,22 @@ class _AddressScreenState extends State<AddressScreen> {
     try {
       // print(amount);
       String formattedAmount = amount + "00";
+      EasyLoading.show(status: 'loading...', maskType: EasyLoadingMaskType.black );
+
+      // old paygateway = https://paymentwithstripenode.herokuapp.com/api/payment 
+
+      // nwe paygateway = https://frontend-pay.vercel.app/payment
+
       final response = await http.post(
-          Uri.parse('https://paymentwithstripenode.herokuapp.com/api/payment'),
-          body: {
+          Uri.parse('https://frontend-pay.vercel.app/payment'),
+          headers: {
+              "Content-Type": "application/json"
+            },
+          body: jsonEncode({
             'email': email,
             'amount': (double.tryParse(formattedAmount)).toString()
-          });
+          }) 
+          );
 
       final jsonResponse = jsonDecode(response.body);
     
@@ -180,6 +191,7 @@ class _AddressScreenState extends State<AddressScreen> {
 
       // await Stripe.instance.pre
 
+        EasyLoading.dismiss();
       await Stripe.instance.presentPaymentSheet();
       payPressed(addressToBeUsed);
       if (Provider.of<UserProvider>(context, listen: false)
@@ -207,6 +219,8 @@ class _AddressScreenState extends State<AddressScreen> {
 
       showSuccessAlert();
     } catch (e) {
+      print(e);
+      EasyLoading.dismiss();
       if (e is StripeException) {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Error: ${e.error.localizedMessage}")));
@@ -224,199 +238,334 @@ class _AddressScreenState extends State<AddressScreen> {
     addressToBeUsed = context.watch<UserProvider>().user.address;
     var user = context.watch<UserProvider>().user;
 
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: AppBar(
-          title: const Text("Checkout"),
-          centerTitle: true,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: GlobalVariables.appBarGradient,
+    return SafeArea(
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: AppBar(
+            title: const Text("Checkout"),
+            centerTitle: true,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: GlobalVariables.appBarGradient,
+              ),
             ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const Text(
-                  'Destination',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                InkWell(
-                  onTap: () {
-                    showModal(context);
-                  },
-                  child: Text(
-                    addressToBeUsed.isEmpty ? "Add" : 'Change',
-                    style: TextStyle(
-                        color: GlobalVariables.selectedNavBarColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  const Text(
+                    'Destination',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
+                  InkWell(
+                    onTap: () {
+                      showModal(context);
+                    },
+                    child: Text(
+                      addressToBeUsed.isEmpty ? "Add" : 'Change',
+                      style: TextStyle(
+                          color: GlobalVariables.selectedNavBarColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ]),
+    
+                const SizedBox(
+                  height: 10,
                 ),
-              ]),
-
-              const SizedBox(
-                height: 10,
-              ),
-
-              addressToBeUsed.isNotEmpty
-                  ? Column(
-                      children: [
-                        SizedBox(
-                            child: Row(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(right: 6),
-                              height: 80,
-                              width: 80,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  color: Colors.grey.shade400,
-                                  borderRadius: BorderRadius.circular(10)),
-                                  child: const Icon(Icons.location_on, size: 50, color: Colors.white,)
-                            ),
-                            Column(
-                              children: [
-                                SizedBox(
-                                  width: 130,
-                                  child: Text(
-                                    addressToBeUsed,
-                                    maxLines: null,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600),
+    
+                addressToBeUsed.isNotEmpty
+                    ? Column(
+                        children: [
+                          SizedBox(
+                              child: Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 6),
+                                height: 80,
+                                width: 80,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey.shade400,
+                                    borderRadius: BorderRadius.circular(10)),
+                                    child: const Icon(Icons.location_on, size: 50, color: Colors.white,)
+                              ),
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    width: 130,
+                                    child: Text(
+                                      addressToBeUsed,
+                                      maxLines: null,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            )
-                          ],
-                        )),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    )
-                  : Column(
-                      children:  [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
+                                ],
+                              )
+                            ],
+                          )),
+                          const SizedBox(
                             height: 20,
-                            child: Wrap(
-                              children: const [Text(
-                                "Please add your address to complete your order",
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.visible,
-                                style: TextStyle(color: Colors.grey),
-                              ),]
-                            )),
-                        const SizedBox(
-                          height: 20,
+                          ),
+                        ],
+                      )
+                    : Column(
+                        children:  [
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          SizedBox(
+                              height: 20,
+                              child: Wrap(
+                                children: const [Text(
+                                  "Please add your address to complete your order",
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.visible,
+                                  style: TextStyle(color: Colors.grey),
+                                ),]
+                              )),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                        ],
+                      ),
+    
+                Center(
+                    child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Sub Total Price",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            Text("\$${widget.totalAmount}")
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [
+                            Text(
+                              "Delivery Fee",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            Text("\$0.0")
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Total Price",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            Text("\$${widget.totalAmount}")
+                          ],
                         ),
                       ],
                     ),
-
-              Center(
-                  child: Column(
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Sub Total Price",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          Text("\$${widget.totalAmount}")
-                        ],
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Builder(
+                      builder: (context) {
+                        return CustomButtons(
+                          color: GlobalVariables.selectedNavBarColor,
+                          disable: addressToBeUsed.isEmpty,
+                          onTap: () async {
+                            await initPaymentSheet(context,
+                                email: user.email, amount: widget.totalAmount);
+                          },
+                          text: 'Pay Now',
+                        );
+                      }
+                    ),
+    
+                    Center(
+                      child: GestureDetector(
+                        onTap: ()=>showInstruction(context),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(child: Text('Click here to read Instruction on How to use Test card!!!', style: TextStyle(color: Colors.red[500], fontSize: 15),)),
+                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            "Delivery Fee",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          Text("\$0.0")
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Total Price",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          Text("\$${widget.totalAmount}")
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Builder(
-                    builder: (context) {
-                      return CustomButtons(
-                        color: GlobalVariables.selectedNavBarColor,
-                        disable: addressToBeUsed.isEmpty,
-                        onTap: () async {
-                          await initPaymentSheet(context,
-                              email: user.email, amount: widget.totalAmount);
-                        },
-                        text: 'Pay Now',
-                      );
-                    }
-                  ),
-                ],
-              )),
-
-              // Platform.isIOS
-              //     ? ApplePayButton(
-              //         width: double.infinity,
-              //         style: ApplePayButtonStyle.whiteOutline,
-              //         type: ApplePayButtonType.buy,
-              //         paymentConfigurationAsset: 'applepay.json',
-              //         onPaymentResult: onApplePayResult,
-              //         paymentItems: paymentItems,
-              //         margin: const EdgeInsets.only(top: 15),
-              //         height: 50,
-              //         onPressed: () => payPressed(address),
-              //       )
-              //     : const SizedBox.shrink(),
-              // const SizedBox(height: 10),
-              // Platform.isAndroid
-              //     ? GooglePayButton(
-              //         onPressed: () => payPressed(address),
-              //         paymentConfigurationAsset: 'gpay.json',
-              //         onPaymentResult: onGooglePayResult,
-              //         paymentItems: paymentItems,
-              //         height: 50,
-              //         style: GooglePayButtonStyle.black,
-              //         type: GooglePayButtonType.buy,
-              //         margin: const EdgeInsets.only(top: 15),
-              //         loadingIndicator: const Center(
-              //           child: CircularProgressIndicator(),
-              //         ),
-              //       )
-              //     : const SizedBox.shrink(),
-            ],
+                    ),
+                    
+                  ],
+                )),
+    
+                // Platform.isIOS
+                //     ? ApplePayButton(
+                //         width: double.infinity,
+                //         style: ApplePayButtonStyle.whiteOutline,
+                //         type: ApplePayButtonType.buy,
+                //         paymentConfigurationAsset: 'applepay.json',
+                //         onPaymentResult: onApplePayResult,
+                //         paymentItems: paymentItems,
+                //         margin: const EdgeInsets.only(top: 15),
+                //         height: 50,
+                //         onPressed: () => payPressed(address),
+                //       )
+                //     : const SizedBox.shrink(),
+                // const SizedBox(height: 10),
+                // Platform.isAndroid
+                //     ? GooglePayButton(
+                //         onPressed: () => payPressed(address),
+                //         paymentConfigurationAsset: 'gpay.json',
+                //         onPaymentResult: onGooglePayResult,
+                //         paymentItems: paymentItems,
+                //         height: 50,
+                //         style: GooglePayButtonStyle.black,
+                //         type: GooglePayButtonType.buy,
+                //         margin: const EdgeInsets.only(top: 15),
+                //         loadingIndicator: const Center(
+                //           child: CircularProgressIndicator(),
+                //         ),
+                //       )
+                //     : const SizedBox.shrink(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  showInstruction(BuildContext context) async {
+
+    showMaterialModalBottomSheet(
+      expand: true,
+  context: context,
+  backgroundColor: Colors.grey[100],
+  builder: (context) {
+      return SingleChildScrollView(
+        controller: ModalScrollController.of(context),
+        child:  Column(          
+              children: [
+                const SizedBox(height: 20,),
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.all(8.0),
+                  
+                  child: Form(
+                    key: _addressFormKey,
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 70,
+                            height: 5,
+                            color: Colors.black12,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('use the digit on the image as the payment card number', style: TextStyle(fontSize: 15),),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('card number: 4242 4242 4242 ...', style: TextStyle(fontSize: 15),),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('(card date): 12/34 (pin):567', style: TextStyle(fontSize: 15),),
+                        ),
+                      
+                          Image.asset("assets/images/pay.png"),
+
+                          const SizedBox(height: 20,),
+
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('To login as Admin, use the details ', style: TextStyle(fontSize: 15),),
+                        ),
+                         const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('(email): admin@gmail.com (pass):super_eco', style: TextStyle(fontSize: 15),),
+                        ),
+                          Image.asset("assets/images/admin.png"),
+                      
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+      );
+  },
+);
+
+    // return await showModalBottomSheet(
+    //     context: context,
+    //     builder: (context) {
+    //       return SingleChildScrollView(
+    //         child: Column(          
+    //           children: [
+    //             Container(
+    //               margin: const EdgeInsets.only(top: 8),
+    //               padding: const EdgeInsets.all(8.0),
+    //               child: Form(
+    //                 key: _addressFormKey,
+    //                 child: Column(
+    //                   children: [
+    //                     CustomTextField(
+    //                       controller: flatBuildingController,
+    //                       hintText: 'Flat, House no, Building',
+    //                     ),
+    //                     const SizedBox(height: 10),
+    //                     CustomTextField(
+    //                       controller: areaController,
+    //                       hintText: 'Area, Street',
+    //                     ),
+    //                     const SizedBox(height: 10),
+    //                     CustomTextField(
+    //                       controller: pincodeController,
+    //                       hintText: 'Pincode',
+    //                     ),
+    //                     const SizedBox(height: 10),
+    //                     CustomTextField(
+    //                       controller: cityController,
+    //                       hintText: 'Town/City',
+    //                     ),
+    //                     const SizedBox(height: 10),
+    //                     CustomButtons(
+    //                       color: GlobalVariables.selectedNavBarColor,
+    //                       onTap: submitAddress,
+    //                       text: 'Set Address',
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       );
+    //     });
+}
+
+
+
+
+
+
+
+
+
+
 
   showModal(BuildContext context) async {
 
@@ -471,15 +620,6 @@ class _AddressScreenState extends State<AddressScreen> {
   },
 );
 
-
-
-
-
-
-
-
-
-
     // return await showModalBottomSheet(
     //     context: context,
     //     builder: (context) {
@@ -527,6 +667,23 @@ class _AddressScreenState extends State<AddressScreen> {
     //       );
     //     });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   void submitAddress() {
     bool isForm = flatBuildingController.text.isNotEmpty ||
